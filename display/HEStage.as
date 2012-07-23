@@ -1,7 +1,5 @@
 package com.happyelements.display
 {
-	import mx.core.Singleton;
-
 	/**
 	 * @author dongpiggyi
 	 */
@@ -26,7 +24,7 @@ package com.happyelements.display
 
 		override public function toString():String
 		{
-			return "[HEStage]" + debugName;
+			return "[HEStage]";
 		}
 
 	}

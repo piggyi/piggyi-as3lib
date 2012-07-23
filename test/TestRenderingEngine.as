@@ -21,27 +21,11 @@ package com.happyelements.test
 		
 		public function TestRenderingEngine()
 		{
-
-//            var childOnly:HEDisplayObject = new HEDisplayObject();
-//			childOnly.drawRect(0, 0, 78, 78, 0x336699);
-//			childOnly.x = childOnly.y = 10;
-//			
-//			var containerOnly:HEDisplayObjectContainer = new HEDisplayObjectContainer();
-//			containerOnly.drawRect(0, 0, 86, 86, 0xFF6600);
-//			containerOnly.x = containerOnly.y = 20;
-//			
-//			containerOnly.addChild(childOnly);
-//			heStage.addChild(containerOnly);
-//			heStage.update(canvas, windowRect);
-//			
-//			trace("getRect: " + containerOnly.getGlobalRect().x, containerOnly.getGlobalRect().width);
-//			trace("getRect: " + childOnly.getGlobalRect().x, childOnly.getGlobalRect().width);
-			
-//			testBitmapRender();
-			testOriginRender();
+			testBitmapRendering();
+//			testOriginRendering();
 		}
 		
-		private function testOriginRender():void
+		private function testOriginRendering():void
 		{
 			var container1:TestSprite = new TestSprite();
             var container2:TestSprite = new TestSprite();
@@ -76,9 +60,10 @@ package com.happyelements.test
 
             addChild(container1);
 			addChild(container2);
+			
 		}
 		
-		private function testBitmapRender():void
+		private function testBitmapRendering():void
 		{
 			var heStage:HEStage = HEStage.getInstance();
             heStage.width = stage.stageWidth;
@@ -96,37 +81,21 @@ package com.happyelements.test
             var child4:HEDisplayObject = new HEDisplayObject();
             var child5:HEDisplayObject = new HEDisplayObject();
 			
-			var drawingGraphicsContainer1:DrawingGraphics = new DrawingGraphics();
-			var drawingGraphicsContainer2:DrawingGraphics = new DrawingGraphics();
-			var drawinggraphicsChild1:DrawingGraphics = new DrawingGraphics();
-			var drawinggraphicsChild2:DrawingGraphics = new DrawingGraphics();
-			var drawinggraphicsChild3:DrawingGraphics = new DrawingGraphics();
-			var drawinggraphicsChild4:DrawingGraphics = new DrawingGraphics();
-			var drawinggraphicsChild5:DrawingGraphics = new DrawingGraphics();
+			container1.displaySource = new DrawingGraphics();
+			container2.displaySource = new DrawingGraphics();
+			child1.displaySource = new DrawingGraphics();
+			child2.displaySource = new DrawingGraphics();
+			child3.displaySource = new DrawingGraphics();
+			child4.displaySource = new DrawingGraphics();
+			child5.displaySource = new DrawingGraphics();
 			
-			drawingGraphicsContainer1.drawRect(0, 0, 100, 100, 0xFF0000);
-			drawingGraphicsContainer2.drawRect(0, 0, 100, 100, 0x0000FF);
-			drawinggraphicsChild1.drawRect(0, 0, 40, 40, 0x3333FF);
-			drawinggraphicsChild2.drawRect(0, 0, 40, 40, 0x33FF33);
-			drawinggraphicsChild3.drawRect(0, 0, 40, 40, 0xFFFF00);
-			drawinggraphicsChild4.drawRect(0, 0, 40, 40, 0xFF6666);
-			drawinggraphicsChild5.drawRect(0, 0, 40, 40, 0xFF99FF);
-            
-//            container1.drawRect(0, 0, 100, 100, 0xFF0000);
-//            container2.drawRect(0, 0, 100, 100, 0x0000FF);
-            container1.displaySource = drawingGraphicsContainer1;
-            container2.displaySource = drawingGraphicsContainer2;
-			
-            child1.displaySource = drawinggraphicsChild1;
-			child2.displaySource = drawinggraphicsChild2;
-			child3.displaySource = drawinggraphicsChild3;
-			child4.displaySource = drawinggraphicsChild4;
-			child5.displaySource = drawinggraphicsChild5;
-//            child1.drawRect(0, 0, 40, 40, 0x3333FF);
-//            child2.drawRect(0, 0, 40, 40, 0x33FF33);
-//            child3.drawRect(0, 0, 40, 40, 0xFFFF00);
-//            child4.drawRect(0, 0, 40, 40, 0xFF6666);
-//            child5.drawRect(0, 0, 40, 40, 0xFF99FF);
+			DrawingGraphics(container1.displaySource).drawRect(0, 0, 100, 100, 0xFF0000);
+			DrawingGraphics(container2.displaySource).drawRect(0, 0, 100, 100, 0x0000FF);
+			DrawingGraphics(child1.displaySource).drawRect(0, 0, 40, 40, 0x3333FF);
+			DrawingGraphics(child2.displaySource).drawRect(0, 0, 40, 40, 0x33FF33);
+			DrawingGraphics(child3.displaySource).drawRect(0, 0, 40, 40, 0xFFFF00);
+			DrawingGraphics(child4.displaySource).drawRect(0, 0, 40, 40, 0xFF6666);
+			DrawingGraphics(child5.displaySource).drawRect(0, 0, 40, 40, 0xFF99FF);
             
             container1.x = container1.y =  50;
             child1.x = child1.y = 10;

@@ -35,8 +35,18 @@ package com.happyelements.display
 			_width = width;
 			_height = height;
 			_color = color;
+			
+			this.width = width;
+			this.height = height;
 		}
-		
+
+		override public function get ownRect():Rectangle
+		{
+			ownRect = new Rectangle(_x, _y, _width, _height);
+			
+			return ownRect;
+		}
+
 
 	}
 }

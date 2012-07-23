@@ -17,12 +17,14 @@ package com.happyelements.display
 		private var _scaleX:Number;
 		private var _scaleY:Number;
 		private var _parent:HEDisplayObjectContainer;
+		private var _globalRect:Rectangle;
 		
 		// point to the root stage
 		private var _stage:HEStage;
 		
-		// point to the display source info of this HEDisplayObject, such as Image and Animation  
+		// point to the display source info of this HEDisplayObject, such as Image and Animation
 		private var _displaySource:AbstractDisplaySource;
+		
 		
 		// for debug
 		private var _debugName:String;
@@ -119,6 +121,16 @@ package com.happyelements.display
 			_parent = parent;
 		}
 
+		public function get displaySource():AbstractDisplaySource
+		{
+			return _displaySource;
+		}
+
+		public function set displaySource(displaySource:AbstractDisplaySource):void
+		{
+			_displaySource = displaySource;
+		}
+
 		public function get debugName():String
 		{
 			return _debugName;
@@ -130,20 +142,36 @@ package com.happyelements.display
 		}
 
 		/* Public Methods*/
-		public function getGlobalRect():Rectangle
+		// 获取显示对象在全局的位置，未计算内部图形偏移量
+		private function getGlobalPosition():Point
 		{
 			var currentDO:HEDisplayObject = this;
-			var rect:Rectangle = new Rectangle();
+			var position:Point = new Point();
 
 			while (!(currentDO is HEStage))
 			{
-				rect.x += currentDO.x;
-				rect.y += currentDO.y;
+				position.x += currentDO.x;
+				position.y += currentDO.y;
 
 				currentDO = currentDO.parent;
 			}
 
-			return rect;
+			return position;
+		}
+
+		// 获取显示对象在全局的矩形位置，计算了内部图形偏移量
+		public function getGlobalRect():Rectangle
+		{
+			if (!_globalRect)
+			{
+				_globalRect = new Rectangle();
+			}
+			_globalRect.x += displaySource.ownRect.x;
+			_globalRect.y += displaySource.ownRect.y;
+			_globalRect.width = displaySource.ownRect.height;
+			_globalRect.height = displaySource.ownRect.height;
+			
+			return _globalRect.clone();
 		}
 
 		public function getRect(targetCoordinateSpace:HEDisplayObject):Rectangle
@@ -155,7 +183,7 @@ package com.happyelements.display
 		{
 			return _stage;
 		}
-		
+
 		internal function setStage(stage:HEStage):void
 		{
 			_stage = stage;
@@ -170,67 +198,29 @@ package com.happyelements.display
 		{
 			if (displaySource)
 			{
-    			_draw(canvas, rect);
+				_draw(canvas, rect);
+				calculateSize();
 			}
-				
-			calculateSize();
 		}
 
 		private function calculateSize():void
 		{
-//			width = graphicsRect.width;
-//			height = graphicsRect.height;
+			width = displaySource.width;
+			height = displaySource.height;
 		}
 
 		private function _draw(canvas:BitmapData, rect:Rectangle):void
 		{
-			var globalRect:Rectangle = getGlobalRect();
+			var globalRect:Point = getGlobalPosition();
 			var x:Number = globalRect.x;
 			var y:Number = globalRect.y;
-//			var width:Number = graphicsRect.width;
-//			var height:Number = graphicsRect.height;
 
-//			var tmpBitmapData:BitmapData = new BitmapData(width, height, true, color | 0xFF000000);
-//			canvas.copyPixels(tmpBitmapData, new Rectangle(0, 0, width, height), new Point(x, y));
-            
 			_displaySource.drawToStage(canvas, rect, x, y);
-
-//			tmpBitmapData.dispose();
-//			tmpBitmapData = null;
-		}
-
-		private var graphicsRect:Rectangle;
-		private var color:uint;
-
-		public function drawRect(x:Number, y:Number, width:Number, height:Number, color:uint = 0x000000):void
-		{
-			if (graphicsRect)
-			{
-				graphicsRect.x = x;
-				graphicsRect.y = y;
-				graphicsRect.width = width;
-				graphicsRect.height = height;
-			}
-			else
-			{
-				graphicsRect = new Rectangle(x, y, width, height);
-			}
-			this.color = color;
 		}
 
 		public function toString():String
 		{
-			return "[HEDisplayObject] " + debugName;
-		}
-
-		public function get displaySource():AbstractDisplaySource
-		{
-			return _displaySource;
-		}
-
-		public function set displaySource(displaySource:AbstractDisplaySource):void
-		{
-			_displaySource = displaySource;
+			return "[HEDisplayObject]";
 		}
 	}
 }

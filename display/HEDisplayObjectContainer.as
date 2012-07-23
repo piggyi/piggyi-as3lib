@@ -18,14 +18,30 @@ package com.happyelements.display
 
 		public function addChild(child:HEDisplayObject):HEDisplayObject
 		{
-			if (childHasParent(child))
+			if (!childHasParent(child))
+			{
+    			_childrenList.push(child);
+			}
+			else if (_childrenList.indexOf(child) != -1)
+			{
+				setChildIndex(child, numChildren - 1);
+			}
+			else
 			{
 				child.parent.removeChild(child);
+                _childrenList.push(child);				
 			}
-			_childrenList.push(child);
+			
 			child.setParent(this);
 			child.setStage(stage);
 			return child;
+		}
+
+		private function setChildIndex(child:HEDisplayObject, index:int):void
+		{
+			var preIndex:int = _childrenList.indexOf(child);
+			_childrenList.splice(preIndex, 1);
+			_childrenList.splice(index, 0, child);
 		}
 
 		private function childHasParent(child:HEDisplayObject):Boolean
@@ -76,6 +92,7 @@ package com.happyelements.display
 		override public function update(canvas:BitmapData, rect:Rectangle):void
 		{
 			super.update(canvas, rect);
+			
 			for each (var child:HEDisplayObject in _childrenList)
 			{
 				child.update(canvas, rect);
@@ -94,7 +111,7 @@ package com.happyelements.display
 
 		override public function toString():String
 		{
-			return "[HEDisplayObjectContainer] " + debugName;
+			return "[HEDisplayObjectContainer]";
 		}
 	}
 }
