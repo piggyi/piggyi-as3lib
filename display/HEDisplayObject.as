@@ -16,18 +16,13 @@ package com.happyelements.display
 		private var _alpha:Number;
 		private var _scaleX:Number;
 		private var _scaleY:Number;
+		private var _visible:Boolean;
 		private var _parent:HEDisplayObjectContainer;
-		private var _globalRect:Rectangle;
-		
-		// point to the root stage
+		internal var globalRect:Rectangle;
+		// 对于添加到显示列表中的对象，此对象指向舞台根对象，否则为空指针
 		private var _stage:HEStage;
-		
-		// point to the display source info of this HEDisplayObject, such as Image and Animation
+		// 指向图形源信息抽象类[AbstractDisplaySource]的具体实现类，可能是图形、位图或是动画类
 		private var _displaySource:AbstractDisplaySource;
-		
-		
-		// for debug
-		private var _debugName:String;
 
 		public function HEDisplayObject()
 		{
@@ -40,7 +35,7 @@ package com.happyelements.display
 			_scaleY = 1;
 		}
 
-		/* Public Properties */
+		/* Public Getter and Setter */
 		public function get width():Number
 		{
 			return _width;
@@ -48,7 +43,7 @@ package com.happyelements.display
 
 		public function set width(width:Number):void
 		{
-			_width = width;
+			// /TODO associate to scaleX
 		}
 
 		public function get height():Number
@@ -58,7 +53,7 @@ package com.happyelements.display
 
 		public function set height(height:Number):void
 		{
-			_height = height;
+			// /TODO associate to scaleY
 		}
 
 		public function get x():Number
@@ -131,19 +126,19 @@ package com.happyelements.display
 			_displaySource = displaySource;
 		}
 
-		public function get debugName():String
+		public function get visible():Boolean
 		{
-			return _debugName;
+			return _visible;
 		}
 
-		public function set debugName(debugName:String):void
+		public function set visible(visible:Boolean):void
 		{
-			_debugName = debugName;
+			_visible = visible;
 		}
-
+		
 		/* Public Methods*/
 		// 获取显示对象在全局的位置，未计算内部图形偏移量
-		private function getGlobalPosition():Point
+		public function getGlobalPosition():Point
 		{
 			var currentDO:HEDisplayObject = this;
 			var position:Point = new Point();
@@ -159,24 +154,41 @@ package com.happyelements.display
 			return position;
 		}
 
-		// 获取显示对象在全局的矩形位置，计算了内部图形偏移量
+		// 获取显示对象在全局的位置及宽高，计算了内部图形偏移量
 		public function getGlobalRect():Rectangle
 		{
-			if (!_globalRect)
+			if (!globalRect)
 			{
-				_globalRect = new Rectangle();
+				globalRect = new Rectangle();
 			}
-			_globalRect.x += displaySource.ownRect.x;
-			_globalRect.y += displaySource.ownRect.y;
-			_globalRect.width = displaySource.ownRect.height;
-			_globalRect.height = displaySource.ownRect.height;
 			
-			return _globalRect.clone();
+			var ownRect:Rectangle = displaySource ? displaySource.getOwnRect() : new Rectangle();
+
+			globalRect.x = getGlobalPosition().x + ownRect.x;
+			globalRect.y = getGlobalPosition().y + ownRect.y;
+			globalRect.width = displaySource.getOwnRect().width;
+			globalRect.height = displaySource.getOwnRect().height;
+
+			return globalRect.clone();
 		}
+		
+        internal function setGlobalRect(globalRect:Rectangle):void
+        {
+            globalRect = globalRect;
+        }
 
 		public function getRect(targetCoordinateSpace:HEDisplayObject):Rectangle
 		{
-			return null;
+			var rect:Rectangle = new Rectangle();
+			var globalRect:Rectangle = getGlobalRect();
+			var targetGlobalPosition:Point = targetCoordinateSpace.getGlobalPosition();
+
+			rect.x = globalRect.x - targetGlobalPosition.x;
+			rect.y = globalRect.y - targetGlobalPosition.y;
+			rect.width = globalRect.width;
+			rect.height = globalRect.height;
+
+			return rect;
 		}
 
 		public function get stage():HEStage
@@ -184,6 +196,10 @@ package com.happyelements.display
 			return _stage;
 		}
 
+		/**
+		 * 使用internal访问控制符，是为了保证在引擎包内的类诸如HEDisplayObjectContainer及HEStage可以在添加子对象时设置舞台根对象
+		 * 而外部继承HEDisplayObject的对象不可写stage，只能读取
+		 */
 		internal function setStage(stage:HEStage):void
 		{
 			_stage = stage;
@@ -191,8 +207,8 @@ package com.happyelements.display
 
 		/**
 		 * 每次渲染时调用
-		 * canvas 全局位图数据的引用
-		 * rect   窗口位置，用来屏蔽窗口外的显示对象以及计算窗口边缘交集显示对象
+		 * @param canvas  全局位图数据的引用
+		 * @param rect    窗口位置，用来屏蔽窗口外的显示对象以及计算窗口边缘交集显示对象
 		 */
 		public function update(canvas:BitmapData, rect:Rectangle):void
 		{
@@ -202,12 +218,28 @@ package com.happyelements.display
 				calculateSize();
 			}
 		}
+		
+		internal function setWidth(width:Number):void
+		{
+			_width = width;
+		}
+		
+		internal function setHeight(height:Number):void
+		{
+			_height = height;
+		}
 
+		public function toString():String
+		{
+			return "[HEDisplayObject]";
+		}
+		
 		private function calculateSize():void
 		{
-			width = displaySource.width;
-			height = displaySource.height;
+			setWidth(displaySource.width);
+			setHeight(displaySource.height);
 		}
+		
 
 		private function _draw(canvas:BitmapData, rect:Rectangle):void
 		{
@@ -218,9 +250,5 @@ package com.happyelements.display
 			_displaySource.drawToStage(canvas, rect, x, y);
 		}
 
-		public function toString():String
-		{
-			return "[HEDisplayObject]";
-		}
 	}
 }
