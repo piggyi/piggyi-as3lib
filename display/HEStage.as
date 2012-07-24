@@ -48,10 +48,8 @@ package com.happyelements.display
 		{
 			_stageHeight = stageHeight;
 		}
-
 	}
 }
-
 class HEStageEntranceClass
 {
 }

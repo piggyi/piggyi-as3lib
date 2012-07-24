@@ -135,7 +135,7 @@ package com.happyelements.display
 		{
 			_visible = visible;
 		}
-		
+
 		/* Public Methods*/
 		// 获取显示对象在全局的位置，未计算内部图形偏移量
 		public function getGlobalPosition():Point
@@ -157,25 +157,13 @@ package com.happyelements.display
 		// 获取显示对象在全局的位置及宽高，计算了内部图形偏移量
 		public function getGlobalRect():Rectangle
 		{
-			if (!globalRect)
-			{
-				globalRect = new Rectangle();
-			}
-			
-			var ownRect:Rectangle = displaySource ? displaySource.getOwnRect() : new Rectangle();
-
-			globalRect.x = getGlobalPosition().x + ownRect.x;
-			globalRect.y = getGlobalPosition().y + ownRect.y;
-			globalRect.width = displaySource.getOwnRect().width;
-			globalRect.height = displaySource.getOwnRect().height;
-
 			return globalRect.clone();
 		}
-		
-        internal function setGlobalRect(globalRect:Rectangle):void
-        {
-            globalRect = globalRect;
-        }
+
+		internal function setGlobalRect(globalRect:Rectangle):void
+		{
+			this.globalRect = globalRect;
+		}
 
 		public function getRect(targetCoordinateSpace:HEDisplayObject):Rectangle
 		{
@@ -216,14 +204,30 @@ package com.happyelements.display
 			{
 				_draw(canvas, rect);
 				calculateSize();
+				calculateGlobalRect();
 			}
 		}
-		
+
+		private function calculateGlobalRect():void
+		{
+			if (!globalRect)
+			{
+				globalRect = new Rectangle();
+			}
+
+			var ownRect:Rectangle = displaySource ? displaySource.getOwnRect() : new Rectangle();
+
+			globalRect.x = getGlobalPosition().x + ownRect.x;
+			globalRect.y = getGlobalPosition().y + ownRect.y;
+			globalRect.width = displaySource.getOwnRect().width;
+			globalRect.height = displaySource.getOwnRect().height;
+		}
+
 		internal function setWidth(width:Number):void
 		{
 			_width = width;
 		}
-		
+
 		internal function setHeight(height:Number):void
 		{
 			_height = height;
@@ -233,13 +237,12 @@ package com.happyelements.display
 		{
 			return "[HEDisplayObject]";
 		}
-		
+
 		private function calculateSize():void
 		{
 			setWidth(displaySource.width);
 			setHeight(displaySource.height);
 		}
-		
 
 		private function _draw(canvas:BitmapData, rect:Rectangle):void
 		{
@@ -249,6 +252,5 @@ package com.happyelements.display
 
 			_displaySource.drawToStage(canvas, rect, x, y);
 		}
-
 	}
 }

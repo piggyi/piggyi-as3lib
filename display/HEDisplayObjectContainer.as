@@ -1,6 +1,5 @@
 package com.happyelements.display
 {
-	import flash.geom.Point;
 	import flash.display.BitmapData;
 	import flash.geom.Rectangle;
 
@@ -47,7 +46,7 @@ package com.happyelements.display
 
 		private function childHasParent(child:HEDisplayObject):Boolean
 		{
-			return child.parent ? true:false;
+			return child.parent ? true : false;
 		}
 
 		public function removeChild(child:HEDisplayObject):HEDisplayObject
@@ -94,24 +93,24 @@ package com.happyelements.display
 		{
 			super.update(canvas, rect);
 
-			// /TODO calculate container size after child added
 			for each (var child:HEDisplayObject in _childrenList)
 			{
 				child.update(canvas, rect);
 			}
-			// calculateContainerGlobalRect();
+			calculateContainerGlobalRect();
+			calculateContainerSize();
 		}
 
-		override public function getGlobalRect():Rectangle
+		private function calculateContainerGlobalRect():void
 		{
-            var displaySourceRect:Rectangle = new Rectangle();
-            var ownRect:Rectangle = (displaySource != null) ? displaySource.getOwnRect() : new Rectangle();
+			var displaySourceRect:Rectangle = new Rectangle();
+			var ownRect:Rectangle = (displaySource != null) ? displaySource.getOwnRect() : new Rectangle();
 
-            displaySourceRect.x = getGlobalPosition().x + ownRect.x;
-            displaySourceRect.y = getGlobalPosition().y + ownRect.y;
-            displaySourceRect.width = displaySource.getOwnRect().width;
-            displaySourceRect.height = displaySource.getOwnRect().height;
-			
+			displaySourceRect.x = getGlobalPosition().x + ownRect.x;
+			displaySourceRect.y = getGlobalPosition().y + ownRect.y;
+			displaySourceRect.width = ownRect.width;
+			displaySourceRect.height = ownRect.height;
+
 			var rect:Rectangle = displaySourceRect;
 			var tempChildRect:Rectangle;
 
@@ -129,7 +128,6 @@ package com.happyelements.display
 					rect.y = tempChildRect.y;
 				}
 			}
-			
 			rect.width = rect.width + displaySourceRect.x - rect.x;
 			rect.height = rect.height + displaySourceRect.y - rect.y;
 
@@ -148,49 +146,12 @@ package com.happyelements.display
 			}
 
 			setGlobalRect(rect);
-			return rect;
 		}
 
-		private function calculateContainerGlobalRect():void
+		private function calculateContainerSize():void
 		{
-			var rect:Rectangle = getGlobalRect();
-			var tempChildRect:Rectangle;
-
-			// 获取容器（包含子对象及自身图形）的全局位置，计算了图形内偏移量
-			for each (var childForPosition:HEDisplayObject in _childrenList)
-			{
-				tempChildRect = childForPosition.getGlobalRect();
-				if (rect.x > tempChildRect.x)
-				{
-					rect.x = tempChildRect.x;
-				}
-
-				if (rect.y > tempChildRect.y)
-				{
-					rect.y = tempChildRect.y;
-				}
-			}
-
-			rect.width = rect.width + getGlobalRect().x - rect.x;
-			rect.height = rect.height + getGlobalRect().y - rect.y;
-
-			for each (var childForSize:HEDisplayObject in _childrenList)
-			{
-				tempChildRect = childForSize.getGlobalRect();
-				if (tempChildRect.width + tempChildRect.x - rect.x > rect.width)
-				{
-					rect.width = tempChildRect.width + tempChildRect.x - rect.x;
-				}
-
-				if (tempChildRect.height + tempChildRect.y - rect.y > rect.height)
-				{
-					rect.height = tempChildRect.height + tempChildRect.y - rect.y;
-				}
-			}
-
-			setGlobalRect(rect);
-			setWidth(rect.width);
-			setHeight(rect.height);
+			setWidth(globalRect.width);
+			setHeight(globalRect.height);
 		}
 
 		override public function toString():String
@@ -199,3 +160,4 @@ package com.happyelements.display
 		}
 	}
 }
+
